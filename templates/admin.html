@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - Predikta</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a0f2c;
+            --secondary: #1c2340;
+            --accent: #00bcd4;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f7fa;
+        }
+        .sidebar {
+            width: 280px;
+            background: var(--primary);
+            transition: all 0.3s;
+        }
+        .content {
+            margin-left: 280px;
+            transition: all 0.3s;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .nav-item:hover {
+            background: var(--secondary);
+        }
+        .active-nav {
+            background: var(--secondary);
+            border-left: 4px solid var(--accent);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar fixed h-full text-white">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold flex items-center">
+                    <i class="fas fa-shield-alt mr-3 text-blue-400"></i>
+                    Predikta Admin
+                </h1>
+            </div>
+            <nav class="mt-8">
+                <ul>
+                    <li>
+                        <a href="#" class="nav-item active-nav flex items-center p-4">
+                            <i class="fas fa-tachometer-alt mr-3"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item flex items-center p-4">
+                            <i class="fas fa-users mr-3"></i>
+                            Gestión de Usuarios
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item flex items-center p-4">
+                            <i class="fas fa-file-alt mr-3"></i>
+                            Contenido del Sitio
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item flex items-center p-4">
+                            <i class="fas fa-chart-line mr-3"></i>
+                            Estadísticas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item flex items-center p-4">
+                            <i class="fas fa-cog mr-3"></i>
+                            Configuración
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content flex-1 overflow-y-auto">
+            <!-- Top Bar -->
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+                <h2 class="text-xl font-semibold">Dashboard</h2>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <i class="fas fa-bell text-gray-500"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">3</span>
+                    </div>
+                    <div class="flex items-center">
+                        <img src="https://via.placeholder.com/40" alt="Admin" class="rounded-full mr-2">
+                        <span>Administrador</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="p-6">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="card p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500">Usuarios Registrados</p>
+                                <h3 class="text-3xl font-bold mt-2">1,248</h3>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-full text-blue-600">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500">Señales Hoy</p>
+                                <h3 class="text-3xl font-bold mt-2">87</h3>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-full text-green-600">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500">Suscripciones Activas</p>
+                                <h3 class="text-3xl font-bold mt-2">642</h3>
+                            </div>
+                            <div class="bg-purple-100 p-3 rounded-full text-purple-600">
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card p-6 mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold">Actividad Reciente</h3>
+                        <button class="text-blue-600 hover:text-blue-800">Ver todo</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="text-left border-b">
+                                    <th class="pb-3">Usuario</th>
+                                    <th class="pb-3">Acción</th>
+                                    <th class="pb-3">Fecha</th>
+                                    <th class="pb-3">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="py-4">Juan Pérez</td>
+                                    <td>Generó señal</td>
+                                    <td>15 May 2023, 14:30</td>
+                                    <td><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Completado</span></td>
+                                </tr>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="py-4">Ana Gómez</td>
+                                    <td>Actualizó perfil</td>
+                                    <td>15 May 2023, 13:45</td>
+                                    <td><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Completado</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold mb-4">Acciones Rápidas</h3>
+                        <div class="space-y-3">
+                            <button class="w-full flex items-center p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100">
+                                <i class="fas fa-user-plus mr-3"></i>
+                                Crear Nuevo Usuario
+                            </button>
+                            <button class="w-full flex items-center p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100">
+                                <i class="fas fa-edit mr-3"></i>
+                                Editar Contenido Principal
+                            </button>
+                            <button class="w-full flex items-center p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100">
+                                <i class="fas fa-cog mr-3"></i>
+                                Configuración del Sistema
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold mb-4">Estadísticas Rápidas</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-gray-600">Usuarios nuevos este mes</p>
+                                <div class="flex items-center mt-1">
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div class="bg-blue-600 h-2.5 rounded-full" style="width: 65%"></div>
+                                    </div>
+                                    <span class="ml-2 text-sm font-medium">65%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-gray-600">Señales generadas</p>
+                                <div class="flex items-center mt-1">
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div class="bg-green-600 h-2.5 rounded-full" style="width: 82%"></div>
+                                    </div>
+                                    <span class="ml-2 text-sm font-medium">82%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidad básica del panel
+        document.addEventListener('DOMContentLoaded', function() {
+            // Activar elementos del menú
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    navItems.forEach(i => i.classList.remove('active-nav'));
+                    this.classList.add('active-nav');
+                });
+            });
+
+            // Aquí puedes agregar más lógica JavaScript según sea necesario
+        });
+    </script>
+</body>
+</html>

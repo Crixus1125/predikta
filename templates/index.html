@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predikta | Trading con IA Profesional</title>
+    <meta name="description" content="Señales de trading generadas por IA para Forex, criptomonedas y más. Analiza mercados como un profesional.">
+    <style>
+        :root {
+            --primary: #00baff;
+            --primary-dark: #0095cc;
+            --gradient-bg: linear-gradient(135deg, #0a0f2c 0%, #020615 100%);
+            --text-light: #cdeeff;
+            --card-bg: rgba(10, 15, 44, 0.7);
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--gradient-bg);
+            color: white;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: rgba(10, 15, 44, 0.9);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 186, 255, 0.2);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo::before {
+            content: "📊";
+        }
+        
+        nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+        }
+        
+        nav a:hover, nav a:focus {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 6rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png') center/cover;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: var(--primary);
+            color: #000;
+            padding: 0.4rem 1.2rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin: 0 0 1.5rem;
+            background: linear-gradient(to right, #00e1ff, #00baff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.9rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 186, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 186, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            color: var(--primary);
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: var(--primary);
+            margin: 1rem auto 0;
+        }
+        
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .analysis-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 186, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .analysis-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+        }
+        
+        .analysis-card h3 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+        
+        .pricing-cards {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .pricing-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            width: 280px;
+            text-align: center;
+            border: 1px solid rgba(0, 186, 255, 0.2);
+        }
+        
+        .pricing-card.featured {
+            border: 2px solid var(--primary);
+            position: relative;
+        }
+        
+        .pricing-card.featured::before {
+            content: "Recomendado";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: #000;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+        
+        .price span {
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+        
+        .testimonials {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .testimonial {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            position: relative;
+        }
+        
+        .testimonial::before {
+            content: """;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 4rem;
+            color: rgba(0, 186, 255, 0.1);
+            font-family: serif;
+            line-height: 1;
+        }
+        
+        .testimonial-author {
+            color: var(--primary);
+            font-style: normal;
+            font-weight: 600;
+            margin-top: 1rem;
+            display: block;
+        }
+        
+        .faq-item {
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        footer {
+            background: #061022;
+            padding: 4rem 2rem 2rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-column h4 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .footer-column p, .footer-column a {
+            color: #aaa;
+            margin-bottom: 0.8rem;
+            display: block;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-column a:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(170, 170, 170, 0.2);
+            color: #777;
+        }
+        
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: #0a0f2c;
+                flex-direction: column;
+                padding: 1rem 0;
+                border-top: 1px solid rgba(0, 186, 255, 0.2);
+            }
+            
+            nav.active {
+                display: flex;
+            }
+            
+            nav a {
+                padding: 0.8rem 2rem;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 250px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Predikta</div>
+        <nav id="main-nav">
+            <a href="#inicio">Inicio</a>
+            <a href="#funciona">Cómo funciona</a>
+            <a href="#analisis">Análisis IA</a>
+            <a href="#planes">Planes</a>
+            <a href="#testimonios">Testimonios</a>
+            <a href="#faq">FAQ</a>
+            <a href="{{ url_for('registro') }}" style="color: #00baff; font-weight: 600;">Registrarse</a>
+        </nav>
+        <button class="mobile-menu-btn" id="menu-btn">☰</button>
+    </header>
+
+    <section class="hero" id="inicio">
+        <div class="hero-content">
+            <span class="badge">FINTECH AI POWERED</span>
+            <h1>IA diseñada para realizar análisis profesionales de mercados como un experto</h1>
+            <p>Analiza todos los instrumentos disponibles en el trading global: Forex, criptomonedas, acciones, índices y más con precisión institucional.</p>
+            <div class="buttons">
+                <a href="{{ url_for('registro') }}" class="btn btn-primary">Probar ahora gratis</a>
+                <a href="{{ url_for('login') }}" class="btn btn-secondary">Acceder a mi cuenta</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="funciona">
+        <h2 class="section-title">¿Cómo funciona Predikta?</h2>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto;">Predikta te permite subir un gráfico desde tu dispositivo o cámara, seleccionar un tipo de estrategia de trading y recibir una señal automática generada por IA, basada en análisis técnico institucional. El resultado puede ser descargado y utilizado directamente en tus plataformas de inversión.</p>
+        
+        <div class="analysis-grid">
+            <div class="analysis-card">
+                <h3>1. Sube tu gráfico</h3>
+                <p>Importa directamente desde tu plataforma de trading o captura una imagen.</p>
+            </div>
+            <div class="analysis-card">
+                <h3>2. Selecciona estrategia</h3>
+                <p>Elige entre scalping, day trading, swing trading o modo cazador.</p>
+            </div>
+            <div class="analysis-card">
+                <h3>3. Recibe tu análisis</h3>
+                <p>Nuestra IA procesará tu gráfico y generará señales con niveles clave.</p>
+            </div>
+            <div class="analysis-card">
+                <h3>4. Opera con confianza</h3>
+                <p>Implementa las señales en tu operativa con un solo clic.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="analisis">
+        <h2 class="section-title">Tipos de Análisis con IA</h2>
+        <div class="analysis-grid">
+            <div class="analysis-card">
+                <h3>Scalping</h3>
+                <p>Análisis rápido para entradas en temporalidades de 1m a 15m con precisión milimétrica.</p>
+            </div>
+            <div class="analysis-card">
+                <h3>Day Trading</h3>
+                <p>Señales que permiten operar dentro del mismo día con gestión de riesgo integrada.</p>
+            </div>
+            <div class="analysis-card">
+                <h3>Swing Trading</h3>
+                <p>Estructuras de mercado más amplias para mantener operaciones por días o semanas.</p>
+            </div>
+            <div class="analysis-card">
+                <h3>Modo Cazador</h3>
+                <p>Detección de trampas de mercado, falsas rupturas y patrones psicológicos.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="planes">
+        <h2 class="section-title">Nuestros Planes</h2>
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <h3>Plan Mensual</h3>
+                <div class="price">$30 <span>/mes</span></div>
+                <p>Acceso completo a todas las herramientas de análisis</p>
+                <p>Señales ilimitadas</p>
+                <p>Soporte prioritario</p>
+                <a href="{{ url_for('registro', plan='mensual') }}" class="btn btn-secondary">Elegir plan</a>
+            </div>
+            <div class="pricing-card featured">
+                <h3>Plan Anual</h3>
+                <div class="price">$25 <span>/mes</span></div>
+                <p class="small">$300 facturados anualmente</p>
+                <p>Todo lo del plan mensual</p>
+                <p>+ Acceso a funciones beta</p>
+                <p>+ Webinars exclusivos</p>
+                <a href="{{ url_for('registro', plan='anual') }}" class="btn btn-primary">Ahorrar 20%</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonios">
+        <h2 class="section-title">Testimonios de Traders</h2>
+        <div class="testimonials">
+            <div class="testimonial">
+                <p>"Desde que uso Predikta, mis decisiones en el mercado son más rápidas y seguras. Es como tener un analista 24/7 conmigo."</p>
+                <span class="testimonial-author">Laura M., Colombia</span>
+            </div>
+            <div class="testimonial">
+                <p>"La precisión de las señales de scalping me ha sorprendido. Predikta es una herramienta obligatoria en mi operativa diaria."</p>
+                <span class="testimonial-author">José R., México</span>
+            </div>
+            <div class="testimonial">
+                <p>"Como principiante, me ha ayudado a entender el mercado. Las explicaciones de cada señal son invaluable para mi aprendizaje."</p>
+                <span class="testimonial-author">Carlos T., España</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq">
+        <h2 class="section-title">Preguntas Frecuentes</h2>
+        <div class="faq-item">
+            <h3 class="faq-question">¿Necesito experiencia previa en trading? <span>+</span></h3>
+            <div class="faq-answer">
+                <p>No. Predikta está diseñado para ser intuitivo tanto para principiantes como para traders experimentados. Nuestras señales incluyen explicaciones detalladas para ayudarte a entender el análisis.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <h3 class="faq-question">¿Las señales son en tiempo real? <span>+</span></h3>
+            <div class="faq-answer">
+                <p>Sí. Nuestra IA procesa los datos del mercado en tiempo real y genera señales inmediatamente cuando detecta oportunidades con alta probabilidad.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <h3 class="faq-question">¿Puedo usar Predikta en móvil? <span>+</span></h3>
+            <div class="faq-answer">
+                <p>Absolutamente. Nuestra plataforma está completamente optimizada para dispositivos móviles y ofrecemos una app dedicada para iOS y Android.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <h3 class="faq-question">¿Ofrecen garantía de resultados? <span>+</span></h3>
+            <div class="faq-answer">
+                <p>El trading siempre implica riesgo. Si bien nuestra IA tiene un alto porcentaje de acierto, no podemos garantizar ganancias. Ofrecemos una prueba gratuita para que evalúes el servicio.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>Sobre Predikta</h4>
+                <p>Plataforma líder en análisis financiero con IA, diseñada por traders para traders.</p>
+            </div>
+            <div class="footer-column">
+                <h4>Soporte</h4>
+                <a href="#">Centro de ayuda</a>
+                <a href="#">Preguntas frecuentes</a>
+                <a href="mailto:soporte@predikta.ai">soporte@predikta.ai</a>
+            </div>
+            <div class="footer-column">
+                <h4>Legal</h4>
+                <a href="#">Términos y Condiciones</a>
+                <a href="#">Política de Privacidad</a>
+                <a href="#">Aviso de riesgo</a>
+            </div>
+            <div class="footer-column">
+                <h4>Redes Sociales</h4>
+                <a href="#">YouTube</a>
+                <a href="#">Telegram</a>
+                <a href="#">Instagram</a>
+                <a href="#">LinkedIn</a>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 Predikta AI. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Menú móvil
+        const menuBtn = document.getElementById('menu-btn');
+        const mainNav = document.getElementById('main-nav');
+        
+        menuBtn.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+        });
+        
+        // FAQ interactivo
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            
+            question.addEventListener('click', () => {
+                item.classList.toggle('active');
+                
+                // Cambiar ícono
+                const icon = question.querySelector('span');
+                icon.textContent = item.classList.contains('active') ? '−' : '+';
+            });
+        });
+        
+        // Smooth scrolling para enlaces internos
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Cerrar menú móvil si está abierto
+                    if (mainNav.classList.contains('active')) {
+                        mainNav.classList.remove('active');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

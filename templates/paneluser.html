@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predikta - Panel de Usuario</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0a0f2c;
+            background-image: linear-gradient(rgba(10, 15, 44, 0.6), rgba(10, 15, 44, 0.6));
+            background-size: cover;
+            background-attachment: fixed;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .form-container {
+            background-color: #1c2340;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .modal-bg {
+            background-color: #1c2340;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        .modal-scroll {
+            max-height: 80vh;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+        h1, h2 {
+            color: #00bcd4;
+            font-weight: 600;
+        }
+        h3, h4, label {
+            color: #ffffff;
+        }
+        .tooltip {
+            color: #b0bec5;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        select, textarea, input:not([type="file"]) {
+            background-color: #2d365a;
+            border: 1px solid #4a5568;
+            color: #ffffff;
+            border-radius: 6px;
+            padding: 10px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        select:focus, textarea:focus, input:focus {
+            outline: none;
+            border-color: #00bcd4;
+            box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.2);
+        }
+        .loading-spinner {
+            border: 4px solid rgba(176, 190, 197, 0.2);
+            border-top: 4px solid #00d8ff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .user-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 8px;
+            width: 200px;
+            background-color: #1f2a40;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            overflow: hidden;
+            display: none;
+        }
+        .user-menu a, .user-menu button {
+            display: block;
+            padding: 12px 16px;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .user-menu a:hover, .user-menu button:hover {
+            background-color: #2d365a;
+        }
+        #cameraPreview {
+            border-radius: 8px;
+            max-height: 300px;
+            object-fit: contain;
+        }
+        #cameraCanvas {
+            display: none;
+        }
+        button {
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #signalResult {
+            white-space: pre-wrap;
+            background-color: #2d365a;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Menú de Usuario -->
+    <div class="fixed top-4 right-4 z-50">
+        <button id="userMenuButton" class="bg-[#1a73e8] hover:bg-[#1565c0] text-white px-5 py-2.5 rounded-lg shadow-md flex items-center">
+            👤 Usuario
+        </button>
+        <div id="userMenu" class="user-menu">
+            <a href="index.html" class="flex items-center"><span class="mr-2">🏠</span> Inicio</a>
+            <a href="#" class="flex items-center" id="configLink"><span class="mr-2">⚙️</span> Configuración</a>
+            <button id="showPlans" class="w-full text-left flex items-center"><span class="mr-2">💼</span> Planes</button>
+            <a href="login.html" class="flex items-center text-[#ef4444] hover:text-white hover:bg-[#ef4444]">
+                <span class="mr-2">🚪</span> Cerrar sesión
+            </a>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="container mx-auto px-4 py-6 mt-16 flex-grow">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold mb-2">Panel de Usuario de Predikta</h1>
+            <p class="tooltip mb-8">Configura tu análisis y recibe tu señal de trading personalizada al instante.</p>
+
+            <div class="form-container">
+                <!-- 1. Selección del tipo de trading -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold mb-3">1. Selección del tipo de trading</h2>
+                    <label class="block mb-2">Tipo de trading:</label>
+                    <select id="tradingType" class="mb-3">
+                        <option value="scalping">Scalping</option>
+                        <option value="day">Day Trading</option>
+                        <option value="swing">Swing Trading</option>
+                        <option value="cazador">Cazador</option>
+                        <option value="ninguno">Ninguno (personalizado)</option>
+                    </select>
+                    <p class="tooltip">
+                        <strong>Scalping:</strong> Análisis rápido en 1m a 15m.<br>
+                        <strong>Day Trading:</strong> Operaciones intradía.<br>
+                        <strong>Swing Trading:</strong> Operaciones de varios días.<br>
+                        <strong>Cazador:</strong> Detecta trampas y errores de la masa.
+                    </p>
+                </div>
+
+                <!-- 2. Selección del tipo de señal -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold mb-3">2. Selección del tipo de señal</h2>
+                    <label class="block mb-2">Tipo de señal:</label>
+                    <select id="signalType" class="mb-3">
+                        <option value="directa">Señal Directa</option>
+                        <option value="pendiente">Orden Pendiente</option>
+                        <option value="completa">Orden Pendiente con TP/SL</option>
+                    </select>
+                    <p class="tooltip">
+                        <strong>Directa:</strong> Entrada inmediata (BUY/SELL).<br>
+                        <strong>Pendiente:</strong> BUY STOP o SELL STOP.<br>
+                        <strong>Completa:</strong> Incluye TP y SL.
+                    </p>
+                </div>
+
+                <!-- 3. Prompt personalizado -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold mb-3">3. Prompt personalizado</h2>
+                    <label class="block mb-2">Describe tu estrategia:</label>
+                    <textarea id="customPrompt" rows="4" class="mb-2" disabled
+                        placeholder="Ejemplo: 'Busco retrocesos al 50% Fibonacci con volumen creciente...'"></textarea>
+                </div>
+
+                <!-- 4. Subir gráfico -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold mb-3">4. Subir gráfico</h2>
+                    <label class="block mb-2">Selecciona método:</label>
+                    <select id="uploadMethod" class="mb-3">
+                        <option value="">-- Elige una opción --</option>
+                        <option value="file">Subir archivo</option>
+                        <option value="camera">Usar cámara</option>
+                    </select>
+                    
+                    <input id="fileInput" type="file" accept="image/*" class="hidden">
+                    
+                    <div id="cameraContainer" class="hidden mt-4">
+                        <video id="cameraPreview" autoplay playsinline class="w-full bg-black rounded-lg mb-2"></video>
+                        <button id="takePhoto" class="bg-[#00bcd4] hover:bg-[#00acc1] text-black px-4 py-2 rounded-lg font-medium mr-2">
+                            📸 Tomar Foto
+                        </button>
+                        <button id="cancelCamera" class="bg-[#ef4444] hover:bg-[#dc2626] text-white px-4 py-2 rounded-lg font-medium">
+                            Cancelar
+                        </button>
+                    </div>
+                    <canvas id="cameraCanvas" class="hidden"></canvas>
+                    
+                    <p id="uploadConfirmation" class="mt-2 text-green-400 hidden">
+                        ✅ Archivo subido correctamente.
+                    </p>
+                    <p class="tooltip mt-1">
+                        Sube una imagen desde tu dispositivo o usa tu cámara. Formatos aceptados: PNG, JPG (máx. 5MB).
+                    </p>
+                </div>
+
+                <!-- 5. Generar señal -->
+                <div class="mb-2">
+                    <h2 class="text-xl font-semibold mb-3">5. Generar señal</h2>
+                    <button id="generateSignal" class="bg-[#00bcd4] hover:bg-[#00acc1] text-black px-6 py-3 rounded-lg font-semibold shadow-lg">
+                        🚀 Generar señal ahora
+                    </button>
+                    <p class="tooltip mt-3">
+                        Verás el análisis y señal en pantalla. También podrás descargarla en formato .txt.
+                        Tiempo estimado: 10-20 segundos.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Resultado -->
+    <div id="resultModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="modal-bg text-white p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="modal-title text-2xl font-bold">📊 Resultado de la Señal</h2>
+                <button id="closeModal" class="text-[#ef4444] hover:text-[#dc2626] text-2xl font-bold">&times;</button>
+            </div>
+            <div id="signalResult" class="mt-4"></div>
+            <button id="downloadSignal" class="mt-6 bg-[#00bcd4] hover:bg-[#00acc1] text-black px-5 py-2.5 rounded-lg font-medium w-full">
+                📥 Descargar señal (.txt)
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Carga -->
+    <div id="loadingModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="bg-[#1c2340] p-6 rounded-lg flex items-center space-x-4 min-w-[300px]">
+            <div class="loading-spinner"></div>
+            <p class="text-lg">Analizando gráfico con IA...</p>
+        </div>
+    </div>
+
+    <!-- Modal Configuración -->
+    <div id="configModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="modal-bg text-white p-6 rounded-lg w-full max-w-md modal-scroll">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">⚙️ Configuración</h2>
+                <button id="closeConfigModal" class="text-[#ef4444] hover:text-[#dc2626] text-2xl font-bold">&times;</button>
+            </div>
+            <form id="userConfigForm">
+                <div class="mb-4">
+                    <label class="block mb-2">Nombre:</label>
+                    <input type="text" id="userName" class="w-full" value="Nombre Usuario" disabled>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-2">Correo:</label>
+                    <input type="email" id="userEmail" class="w-full" value="usuario@predikta.com" disabled>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-2">País:</label>
+                    <select id="userCountry" class="w-full">
+                        <option value="mx">México</option>
+                        <option value="co">Colombia</option>
+                        <option value="ar">Argentina</option>
+                    </select>
+                </div>
+                
+                <h3 class="text-xl font-semibold mt-6 mb-3">🔒 Cambiar Contraseña</h3>
+                <div class="mb-4">
+                    <label class="block mb-2">Contraseña Actual:</label>
+                    <input type="password" id="currentPassword" class="w-full" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-2">Nueva Contraseña:</label>
+                    <input type="password" id="newPassword" class="w-full" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block mb-2">Confirmar Contraseña:</label>
+                    <input type="password" id="confirmPassword" class="w-full" required>
+                </div>
+                
+                <button type="submit" class="bg-[#00bcd4] hover:bg-[#00acc1] text-black px-5 py-2.5 rounded-lg font-medium w-full">
+                    Guardar Cambios
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Planes -->
+    <div id="plansModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="modal-bg text-white p-6 rounded-lg w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">💼 Planes Predikta</h2>
+                <button id="closePlansModal" class="text-[#ef4444] hover:text-[#dc2626] text-2xl font-bold">&times;</button>
+            </div>
+            <div class="mb-6">
+                <div class="bg-[#2d365a] p-4 rounded-lg mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Mensual</h3>
+                    <p class="text-3xl font-bold text-[#00bcd4]">$30 USD</p>
+                    <p class="text-sm mt-1">Renovación automática cada 30 días</p>
+                </div>
+                <div class="bg-[#2d365a] p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-2">Anual (¡Ahorra 16.7%!)</h3>
+                    <p class="text-3xl font-bold text-[#00bcd4]">$25 USD/mes</p>
+                    <p class="text-sm mt-1">$300 USD pagados una vez al año</p>
+                    <p class="text-green-400 mt-2">✅ Ahorras $60 USD anuales</p>
+                </div>
+            </div>
+            <div class="flex space-x-4">
+                <button id="payMonthly" class="bg-[#00bcd4] hover:bg-[#00acc1] text-black px-4 py-2 rounded-lg font-medium flex-1">
+                    Pagar Mensual
+                </button>
+                <button id="payYearly" class="bg-[#4caf50] hover:bg-[#43a047] text-black px-4 py-2 rounded-lg font-medium flex-1">
+                    Pagar Anual
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Método de Pago -->
+    <div id="paymentModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="modal-bg text-white p-6 rounded-lg w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">💳 Método de Pago</h2>
+                <button id="closePaymentModal" class="text-[#ef4444] hover:text-[#dc2626] text-2xl font-bold">&times;</button>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex mb-4 border-b border-[#4a5568] pb-4">
+                    <button id="tabCrypto" class="flex-1 bg-[#2d365a] py-2 rounded-l-lg font-medium border-r border-[#4a5568]">
+                        USDT (TRC20)
+                    </button>
+                    <button id="tabCard" class="flex-1 bg-[#1c2340] py-2 rounded-r-lg font-medium">
+                        Tarjeta de Crédito
+                    </button>
+                </div>
+                
+                <!-- Contenido Cripto -->
+                <div id="cryptoContent" class="">
+                    <div class="bg-[#2d365a] p-4 rounded-lg mb-4">
+                        <p class="mb-2">Envía exactamente <span class="font-bold" id="paymentAmount">$30.00</span> USDT a:</p>
+                        <p class="font-mono bg-black p-2 rounded text-sm break-all mb-3">TXYZ123...7890 (TRC20)</p>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TXYZ123...7890" alt="QR USDT" class="mx-auto">
+                        <button id="confirmCryptoPayment" class="mt-4 bg-[#4caf50] hover:bg-[#43a047] text-black px-5 py-2.5 rounded-lg font-medium w-full">
+                            ✅ Confirmar Pago
+                        </button>
+                        <p class="text-xs mt-3 text-center">La activación puede tardar hasta 15 minutos después de la confirmación en la blockchain.</p>
+                    </div>
+                </div>
+                
+                <!-- Contenido Tarjeta (oculto inicialmente) -->
+                <div id="cardContent" class="hidden">
+                    <form id="cardForm">
+                        <div class="mb-4">
+                            <label class="block mb-2">Número de Tarjeta:</label>
+                            <input type="text" id="cardNumber" class="w-full" placeholder="4242 4242 4242 4242" required>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block mb-2">Fecha Exp.:</label>
+                                <input type="text" id="cardExpiry" class="w-full" placeholder="MM/AA" required>
+                            </div>
+                            <div>
+                                <label class="block mb-2">CVV:</label>
+                                <input type="text" id="cardCvv" class="w-full" placeholder="123" required>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block mb-2">Nombre en Tarjeta:</label>
+                            <input type="text" id="cardName" class="w-full" placeholder="Nombre Apellido" required>
+                        </div>
+                        <button type="submit" class="bg-[#00bcd4] hover:bg-[#00acc1] text-black px-5 py-2.5 rounded-lg font-medium w-full">
+                            Pagar $<span id="cardAmount">30</span>.00 USD
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de Página -->
+    <footer class="text-white text-center py-4 bg-[#0a0f2c] mt-8">
+        <p>© 2025 Predikta Trading Signals. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        // 1. Manejo del menú de usuario
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userMenu = document.getElementById('userMenu');
+
+        userMenuButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userMenu.style.display = userMenu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', () => {
+            userMenu.style.display = 'none';
+        });
+
+        userMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // 2. Habilitar/deshabilitar prompt personalizado
+        const tradingTypeSelect = document.getElementById('tradingType');
+        const customPromptTextarea = document.getElementById('customPrompt');
+        
+        tradingTypeSelect.addEventListener('change', () => {
+            customPromptTextarea.disabled = tradingTypeSelect.value !== 'ninguno';
+            if (!customPromptTextarea.disabled) {
+                customPromptTextarea.focus();
+            }
+        });
+
+        // 3. Manejo de subida de archivos (MÉTODO ORIGINAL + CÁMARA)
+        const uploadMethodSelect = document.getElementById('uploadMethod');
+        const fileInput = document.getElementById('fileInput');
+        const uploadConfirmation = document.getElementById('uploadConfirmation');
+        const cameraContainer = document.getElementById('cameraContainer');
+        const cameraPreview = document.getElementById('cameraPreview');
+        const cameraCanvas = document.getElementById('cameraCanvas');
+        const takePhotoBtn = document.getElementById('takePhoto');
+        const cancelCameraBtn = document.getElementById('cancelCamera');
+        let stream = null;
+
+        uploadMethodSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'camera') {
+                startCamera();
+            } else if (e.target.value === 'file') {
+                fileInput.click();
+            } else {
+                cameraContainer.classList.add('hidden');
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+            }
+        });
+
+        async function startCamera() {
+            cameraContainer.classList.remove('hidden');
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                cameraPreview.srcObject = stream;
+            } catch (err) {
+                alert('No se pudo acceder a la cámara: ' + err.message);
+                document.getElementById('uploadMethod').value = '';
+            }
+        }
+
+        takePhotoBtn.addEventListener('click', () => {
+            const context = cameraCanvas.getContext('2d');
+            cameraCanvas.width = cameraPreview.videoWidth;
+            cameraCanvas.height = cameraPreview.videoHeight;
+            context.drawImage(cameraPreview, 0, 0, cameraCanvas.width, cameraCanvas.height);
+            
+            // Detener cámara
+            stream.getTracks().forEach(track => track.stop());
+            cameraContainer.classList.add('hidden');
+            
+            // Convertir a File y simular input
+            cameraCanvas.toBlob((blob) => {
+                const file = new File([blob], 'foto.png', { type: 'image/png' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                document.getElementById('fileInput').files = dataTransfer.files;
+                
+                // Mostrar confirmación
+                uploadConfirmation.classList.remove('hidden');
+                uploadConfirmation.textContent = '✅ Foto capturada correctamente.';
+            }, 'image/png');
+        });
+
+        cancelCameraBtn.addEventListener('click', () => {
+            stream.getTracks().forEach(track => track.stop());
+            cameraContainer.classList.add('hidden');
+            document.getElementById('uploadMethod').value = '';
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validar tamaño (máx 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('El archivo es demasiado grande. Por favor, sube una imagen menor a 5MB.');
+                return;
+            }
+
+            uploadConfirmation.classList.remove('hidden');
+            uploadConfirmation.textContent = `✅ ${file.name} subido correctamente.`;
+        });
+
+        // 4. Generación de señal (LÓGICA ORIGINAL)
+        const generateSignalButton = document.getElementById('generateSignal');
+        const resultModal = document.getElementById('resultModal');
+        const loadingModal = document.getElementById('loadingModal');
+        const closeModalButton = document.getElementById('closeModal');
+
+        generateSignalButton.addEventListener('click', async () => {
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Por favor selecciona una imagen.');
+                return;
+            }
+
+            loadingModal.classList.remove('hidden');
+
+            const lector = new FileReader();
+            lector.onload = async function() {
+                try {
+                    const tipoTrading = document.getElementById('tradingType').value;
+                    const tipoSenal = document.getElementById('signalType').value;
+                    const promptInput = document.getElementById('customPrompt').value;
+                    const base64 = lector.result; // MÉTODO ORIGINAL (con prefijo data:image/)
+
+                    // Construcción del prompt ORIGINAL
+                    let promptFinal = "";
+                    if (tipoTrading === "ninguno") {
+                        promptFinal = promptInput + "\n\nGenera una señal clara del tipo: " + tipoSenal;
+                    } else {
+                        promptFinal = "Realiza un análisis técnico profundo de " + tipoTrading + " y genera una señal del tipo: " + tipoSenal + ".\n\n";
+                        
+                        if (tipoSenal === "directa") {
+                            promptFinal += "SEÑAL: BUY o SELL";
+                        } else if (tipoSenal === "completa") {
+                            promptFinal += "SEÑAL: BUY STOP o SELL STOP @ precio\nTAKE PROFIT: precio\nSTOP LOSS: precio";
+                        } else {
+                            promptFinal += "SEÑAL: BUY STOP o SELL STOP @ precio";
+                        }
+                        promptFinal += "\n\nLuego explica con análisis técnico por qué se generó esa entrada.";
+                    }
+
+                    // Llamada a la API (MÉTODO ORIGINAL)
+                    const response = await fetch("http://127.0.0.1:5000/api/analizar", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({
+                            tipo_trading: tipoTrading,
+                            tipo_senal: tipoSenal,
+                            prompt: promptFinal,
+                            imagen: base64 // ENVIAMOS CON PREFIJO data:image/
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || "Error al generar la señal");
+                    }
+
+                    document.getElementById('signalResult').textContent = data.respuesta;
+                    resultModal.classList.remove('hidden');
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error al generar la señal: ' + error.message);
+                } finally {
+                    loadingModal.classList.add('hidden');
+                }
+            };
+            lector.readAsDataURL(file); // MÉTODO ORIGINAL
+        });
+
+        // Cerrar modal de resultado
+        closeModalButton.addEventListener('click', () => {
+            resultModal.classList.add('hidden');
+        });
+
+        // Descargar señal como TXT
+        document.getElementById('downloadSignal').addEventListener('click', () => {
+            const signalText = document.getElementById('signalResult').textContent;
+            const blob = new Blob([signalText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `senal_predikta_${new Date().toISOString().slice(0,10)}.txt`;
+            
+            document.body.appendChild(a);
+            a.click();
+            
+            // Limpieza
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+        });
+
+        // ===== [CONFIGURACIÓN DEL USUARIO] =====
+        const configLink = document.getElementById('configLink');
+        const configModal = document.getElementById('configModal');
+        const closeConfigModal = document.getElementById('closeConfigModal');
+
+        configLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            configModal.classList.remove('hidden');
+        });
+
+        closeConfigModal.addEventListener('click', () => {
+            configModal.classList.add('hidden');
+        });
+
+        document.getElementById('userConfigForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+            
+            if (newPass !== confirmPass) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+            
+            alert('Configuración guardada correctamente');
+            configModal.classList.add('hidden');
+        });
+
+        // ===== [PLANES Y PAGOS] =====
+        const plansBtn = document.getElementById('showPlans');
+        const plansModal = document.getElementById('plansModal');
+        const closePlansModal = document.getElementById('closePlansModal');
+        const paymentModal = document.getElementById('paymentModal');
+
+        plansBtn.addEventListener('click', () => {
+            plansModal.classList.remove('hidden');
+        });
+
+        closePlansModal.addEventListener('click', () => {
+            plansModal.classList.add('hidden');
+        });
+
+        // Botones de pago
+        document.getElementById('payMonthly').addEventListener('click', () => {
+            plansModal.classList.add('hidden');
+            paymentModal.classList.remove('hidden');
+            document.getElementById('paymentAmount').textContent = '$30.00';
+            document.getElementById('cardAmount').textContent = '30';
+        });
+
+        document.getElementById('payYearly').addEventListener('click', () => {
+            plansModal.classList.add('hidden');
+            paymentModal.classList.remove('hidden');
+            document.getElementById('paymentAmount').textContent = '$300.00';
+            document.getElementById('cardAmount').textContent = '300';
+        });
+
+        // Tabs de método de pago
+        document.getElementById('tabCrypto').addEventListener('click', () => {
+            document.getElementById('cryptoContent').classList.remove('hidden');
+            document.getElementById('cardContent').classList.add('hidden');
+            document.getElementById('tabCrypto').classList.add('bg-[#2d365a]');
+            document.getElementById('tabCard').classList.remove('bg-[#2d365a]');
+        });
+
+        document.getElementById('tabCard').addEventListener('click', () => {
+            document.getElementById('cryptoContent').classList.add('hidden');
+            document.getElementById('cardContent').classList.remove('hidden');
+            document.getElementById('tabCrypto').classList.remove('bg-[#2d365a]');
+            document.getElementById('tabCard').classList.add('bg-[#2d365a]');
+        });
+
+        // Cerrar modal de pago
+        document.getElementById('closePaymentModal').addEventListener('click', () => {
+            paymentModal.classList.add('hidden');
+        });
+
+        // Confirmación de pago con USDT
+        document.getElementById('confirmCryptoPayment').addEventListener('click', () => {
+            if (confirm('¿Has enviado exactamente ' + document.getElementById('paymentAmount').textContent + ' USDT a la dirección proporcionada?')) {
+                alert('Pago confirmado. La activación se completará en unos minutos.');
+                paymentModal.classList.add('hidden');
+            }
+        });
+
+        // Validación de tarjeta (simulada)
+        document.getElementById('cardForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Pago procesado exitosamente (simulación)');
+            paymentModal.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
