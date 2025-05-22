@@ -68,6 +68,8 @@ def panel():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     return render_template('paneluser.html')
+
+# Ruta del panel admin protegida
 @app.route('/admin')
 def admin_panel():
     if 'user_id' not in session:
@@ -93,7 +95,6 @@ def analizar():
         return jsonify({'error': 'No autorizado'}), 401
 
     data = request.get_json()
-
     tipo_trading = data.get("tipo_trading", "ninguno").lower().strip()
     tipo_senal = data.get("tipo_senal", "directa").lower().strip()
     prompt_usuario = data.get("prompt", "")
@@ -102,7 +103,6 @@ def analizar():
     if not imagen_base64:
         return jsonify({"error": "No se recibió imagen"}), 400
 
-    # Estilo según tipo de trading
     if tipo_trading == "cazador":
         estilo = "modo Cazador: detectar trampas, manipulación institucional y errores de la masa"
     elif tipo_trading == "day":
@@ -164,7 +164,6 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         if not User.query.filter_by(email='admin@predikta.com').first():
-            from werkzeug.security import generate_password_hash
             admin = User(
                 nombre='Admin Predikta',
                 email='admin@predikta.com',
@@ -176,7 +175,3 @@ if __name__ == '__main__':
 
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
-
-    
-port = int(os.environ.get("PORT", 5000))
-app.run(host='0.0.0.0', port=port)
