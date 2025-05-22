@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro Completo - Predikta</title>
+    <title>Registro - Predikta</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --azul-oscuro: #0a0f2c;
@@ -15,11 +16,21 @@
             --negro: #000000;
             --error: #ff6b6b;
             --success: #4caf50;
+            --warning: #ff9800;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
         
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--azul-oscuro);
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(0, 188, 212, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 188, 212, 0.15) 0%, transparent 50%);
             color: var(--blanco);
             display: flex;
             justify-content: center;
@@ -32,11 +43,45 @@
         
         .form-container {
             background-color: var(--azul-medio);
-            padding: 30px;
-            border-radius: 10px;
+            padding: 40px;
+            border-radius: 15px;
             width: 100%;
-            max-width: 450px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cyan), #7e57c2);
+            z-index: 2;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo img {
+            height: 60px;
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover img {
+            transform: scale(1.05);
         }
         
         h1 {
@@ -44,129 +89,276 @@
             color: var(--cyan);
             margin-bottom: 25px;
             font-size: 28px;
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--cyan);
+            margin: 10px auto 0;
+            opacity: 0.5;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
         
         .form-group {
             margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group.full-width {
+            grid-column: span 2;
         }
         
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--blanco);
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+        
+        .input-container {
+            position: relative;
         }
         
         input, select {
             width: 100%;
-            padding: 12px 15px;
-            border-radius: 6px;
-            border: 1px solid var(--azul-claro);
+            padding: 14px 15px 14px 40px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             background-color: var(--azul-claro);
             color: var(--blanco);
             font-size: 15px;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+        }
+        
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 15px;
         }
         
         input:focus, select:focus {
             outline: none;
             border-color: var(--cyan);
-            box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.2);
+            box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.3);
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 16px;
         }
         
         .password-container {
             position: relative;
         }
         
-        .show-password {
+        .toggle-password {
             position: absolute;
             right: 15px;
-            top: 42px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
             cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        
+        .toggle-password:hover {
             color: var(--cyan);
-            font-size: 13px;
-            user-select: none;
+        }
+        
+        .password-strength {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .strength-meter {
+            height: 100%;
+            width: 0;
+            background: var(--error);
+            transition: width 0.4s, background 0.4s;
         }
         
         button {
             width: 100%;
-            padding: 14px;
-            margin-top: 10px;
-            border-radius: 6px;
+            padding: 15px;
+            border-radius: 8px;
             border: none;
-            background-color: var(--cyan);
+            background: linear-gradient(135deg, var(--cyan), #7e57c2);
             color: var(--negro);
-            font-weight: bold;
+            font-weight: 600;
             font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--cyan-hover), #9575cd);
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s;
+        }
+        
+        button:hover::before {
+            opacity: 1;
         }
         
         button:hover {
-            background-color: var(--cyan-hover);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
         }
         
         .terms-container {
             display: flex;
             align-items: flex-start;
             margin: 25px 0;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--cyan);
         }
         
         .terms-container input {
             width: auto;
             margin-right: 12px;
-            margin-top: 4px;
+            margin-top: 3px;
+            accent-color: var(--cyan);
         }
         
         .terms-text {
-            font-size: 14px;
-            color: #c9c9c9;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
         }
         
         .terms-text a {
             color: var(--cyan);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
+            transition: all 0.3s;
         }
         
         .terms-text a:hover {
             text-decoration: underline;
+            color: var(--cyan-hover);
         }
         
         .login-link {
             text-align: center;
             margin-top: 25px;
             font-size: 15px;
+            color: rgba(255, 255, 255, 0.7);
         }
         
         .login-link a {
             color: var(--cyan);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-left: 5px;
         }
         
         .login-link a:hover {
             text-decoration: underline;
         }
         
-        .error-message {
-            color: var(--error);
-            font-size: 13px;
-            margin-top: 5px;
-            display: none;
-        }
-        
-        .success-message {
-            color: var(--success);
-            text-align: center;
+        .message {
+            padding: 12px;
             margin-bottom: 20px;
-            font-weight: 600;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            animation: fadeInUp 0.4s;
         }
         
-        @media (max-width: 480px) {
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error {
+            background-color: rgba(255, 107, 107, 0.15);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+        
+        .success {
+            background-color: rgba(76, 175, 80, 0.15);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        .warning {
+            background-color: rgba(255, 152, 0, 0.15);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+        
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(0, 0, 0, 0.2);
+            border-top-color: var(--negro);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            
             .form-container {
-                padding: 25px 20px;
+                padding: 30px 20px;
             }
             
             h1 {
@@ -177,55 +369,85 @@
 </head>
 <body>
     <div class="form-container">
-        <h1>Crear Cuenta</h1>
+        <div class="logo">
+            <img src="https://via.placeholder.com/200x60?text=PREDIKTA&color=00bcd4" alt="Predikta Logo" id="logo">
+        </div>
         
-        <form id="registerForm" action="procesar_registro.php" method="POST">
-            <!-- Nombres Completos -->
-            <div class="form-group">
-                <label for="nombre_completo">Nombres Completos</label>
-                <input type="text" id="nombre_completo" name="nombre_completo" required>
-                <div id="nombre-error" class="error-message"></div>
-            </div>
-            
-            <!-- Nombre de Usuario -->
-            <div class="form-group">
-                <label for="username">Nombre de Usuario</label>
-                <input type="text" id="username" name="username" required>
-                <div id="username-error" class="error-message"></div>
-            </div>
-            
-            <!-- Correo Electrónico -->
-            <div class="form-group">
-                <label for="email">Correo Electrónico</label>
-                <input type="email" id="email" name="email" required>
-                <div id="email-error" class="error-message"></div>
-            </div>
-            
-            <!-- Contraseña -->
-            <div class="form-group">
-                <label for="password">Contraseña</label>
-                <div class="password-container">
-                    <input type="password" id="password" name="password" required minlength="6">
-                    <span class="show-password" onclick="togglePassword('password')">Mostrar</span>
+        <h1>Crear Cuenta</h1>
+
+        <div id="message"></div>
+
+        <form id="registerForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="nombre">Nombre(s)</label>
+                    <div class="input-container">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="nombre" name="nombre" required placeholder="Ej: Juan">
+                    </div>
+                    <div id="nombre-error" class="message"></div>
                 </div>
-                <div id="password-error" class="error-message"></div>
-            </div>
-            
-            <!-- Confirmar Contraseña -->
-            <div class="form-group">
-                <label for="confirm_password">Confirmar Contraseña</label>
-                <div class="password-container">
-                    <input type="password" id="confirm_password" name="confirm_password" required>
-                    <span class="show-password" onclick="togglePassword('confirm_password')">Mostrar</span>
+                
+                <div class="form-group">
+                    <label for="apellido">Apellido(s)</label>
+                    <div class="input-container">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="apellido" name="apellido" required placeholder="Ej: Pérez">
+                    </div>
+                    <div id="apellido-error" class="message"></div>
                 </div>
-                <div id="confirm-error" class="error-message"></div>
-            </div>
-            
-            <!-- País -->
-            <div class="form-group">
-                <label for="pais">País</label>
-                <select id="pais" name="pais" required>
-                    <option value="">Selecciona tu país</option>
+                
+                <div class="form-group full-width">
+                    <label for="usuario">Nombre de Usuario</label>
+                    <div class="input-container">
+                        <i class="fas fa-at input-icon"></i>
+                        <input type="text" id="usuario" name="usuario" required placeholder="Ej: juanperez2023">
+                    </div>
+                    <div id="usuario-error" class="message"></div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="email">Correo Electrónico</label>
+                    <div class="input-container">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="email" name="email" required placeholder="tucorreo@ejemplo.com">
+                    </div>
+                    <div id="email-error" class="message"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="password-container">
+                        <div class="input-container">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="password" name="password" required placeholder="••••••••" minlength="6">
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword('password')"></i>
+                        </div>
+                        <div class="password-strength">
+                            <div class="strength-meter" id="strength-meter"></div>
+                        </div>
+                    </div>
+                    <div id="password-error" class="message"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password">Confirmar Contraseña</label>
+                    <div class="password-container">
+                        <div class="input-container">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="confirm_password" name="confirm_password" required placeholder="••••••••">
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword('confirm_password')"></i>
+                        </div>
+                    </div>
+                    <div id="confirm-error" class="message"></div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="pais">País</label>
+                    <div class="input-container">
+                        <i class="fas fa-globe-americas input-icon"></i>
+                        <select id="pais" name="pais" required>
+                            <option value="">Selecciona tu país</option>
                     <option value="Afganistán">Afganistán</option>
                     <option value="Albania">Albania</option>
                     <option value="Alemania">Alemania</option>
@@ -419,25 +641,28 @@
                     <option value="Yibuti">Yibuti</option>
                     <option value="Zambia">Zambia</option>
                     <option value="Zimbabue">Zimbabue</option>
-                </select>
-                <div id="pais-error" class="error-message"></div>
+                        </select>
+                    </div>
+                    <div id="pais-error" class="message"></div>
+                </div>
             </div>
             
-            <!-- Términos y Condiciones -->
             <div class="terms-container">
                 <input type="checkbox" id="terms" name="terms" required>
                 <label for="terms" class="terms-text">
-                    Acepto los <a href="terminos.html" target="_blank">Términos y Condiciones</a> y la 
-                    <a href="privacidad.html" target="_blank">Política de Privacidad</a>
+                    Acepto los <a href="#" target="_blank">Términos y Condiciones</a> y la 
+                    <a href="#" target="_blank">Política de Privacidad</a> de Predikta. Confirmo que soy mayor de 18 años.
                 </label>
             </div>
-            <div id="terms-error" class="error-message"></div>
+            <div id="terms-error" class="message"></div>
             
-            <button type="submit">Registrarse</button>
+            <button type="submit" id="submitBtn">
+                <i class="fas fa-user-plus"></i> Crear Cuenta
+            </button>
         </form>
         
         <div class="login-link">
-            ¿Ya tienes una cuenta? <a href="login.html">Inicia sesión</a>
+            ¿Ya tienes una cuenta? <a href="login.html">Inicia sesión aquí</a>
         </div>
     </div>
 
@@ -445,68 +670,108 @@
         // Mostrar/ocultar contraseña
         function togglePassword(fieldId) {
             const field = document.getElementById(fieldId);
-            const toggle = field.nextElementSibling;
+            const icon = field.nextElementSibling;
             
             if (field.type === "password") {
                 field.type = "text";
-                toggle.textContent = "Ocultar";
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
             } else {
                 field.type = "password";
-                toggle.textContent = "Mostrar";
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         }
         
+        // Medidor de fortaleza de contraseña
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthMeter = document.getElementById('strength-meter');
+            let strength = 0;
+            
+            // Verificar longitud
+            if (password.length > 0) strength += 1;
+            if (password.length >= 6) strength += 1;
+            if (password.length >= 8) strength += 1;
+            
+            // Verificar caracteres especiales
+            if (/[A-Z]/.test(password)) strength += 1;
+            if (/[0-9]/.test(password)) strength += 1;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+            
+            // Actualizar medidor visual
+            const width = (strength / 6) * 100;
+            strengthMeter.style.width = width + '%';
+            
+            // Cambiar color según fortaleza
+            if (strength <= 2) {
+                strengthMeter.style.backgroundColor = 'var(--error)';
+            } else if (strength <= 4) {
+                strengthMeter.style.backgroundColor = 'var(--warning)';
+            } else {
+                strengthMeter.style.backgroundColor = 'var(--success)';
+            }
+        });
+        
         // Validación del formulario
         document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Mostrar estado de carga
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '<i class="fas fa-spinner"></i> Creando cuenta...';
+            submitBtn.classList.add('btn-loading');
+            
+            // Ocultar todos los mensajes de error
+            document.querySelectorAll('.message').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Validar campos
             let isValid = true;
             
-            // Validar nombre completo
-            const nombre = document.getElementById('nombre_completo').value.trim();
+            // Validar nombre
+            const nombre = document.getElementById('nombre').value.trim();
             if (nombre === '') {
-                showError('nombre-error', 'Por favor ingresa tu nombre completo');
+                showError('nombre-error', 'Por favor ingresa tu nombre');
                 isValid = false;
-            } else {
-                hideError('nombre-error');
             }
             
-            // Validar nombre de usuario
-            const username = document.getElementById('username').value.trim();
-            if (username === '') {
-                showError('username-error', 'Ingresa un nombre de usuario');
+            // Validar apellido
+            const apellido = document.getElementById('apellido').value.trim();
+            if (apellido === '') {
+                showError('apellido-error', 'Por favor ingresa tu apellido');
                 isValid = false;
-            } else if (username.length < 4) {
-                showError('username-error', 'Mínimo 4 caracteres');
+            }
+            
+            // Validar usuario
+            const usuario = document.getElementById('usuario').value.trim();
+            if (usuario === '') {
+                showError('usuario-error', 'Ingresa un nombre de usuario');
                 isValid = false;
-            } else {
-                hideError('username-error');
+            } else if (usuario.length < 4) {
+                showError('usuario-error', 'El usuario debe tener al menos 4 caracteres');
+                isValid = false;
             }
             
             // Validar email
             const email = document.getElementById('email').value.trim();
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                showError('email-error', 'Ingresa un correo válido');
+                showError('email-error', 'Ingresa un correo electrónico válido');
                 isValid = false;
-            } else {
-                hideError('email-error');
             }
             
             // Validar contraseña
             const password = document.getElementById('password').value;
             if (password.length < 6) {
-                showError('password-error', 'Mínimo 6 caracteres');
+                showError('password-error', 'La contraseña debe tener al menos 6 caracteres');
                 isValid = false;
-            } else {
-                hideError('password-error');
             }
             
             // Validar confirmación de contraseña
             const confirmPassword = document.getElementById('confirm_password').value;
-            if (confirmPassword !== password) {
+            if (password !== confirmPassword) {
                 showError('confirm-error', 'Las contraseñas no coinciden');
                 isValid = false;
-            } else {
-                hideError('confirm-error');
             }
             
             // Validar país
@@ -514,33 +779,45 @@
             if (pais === '') {
                 showError('pais-error', 'Selecciona tu país');
                 isValid = false;
-            } else {
-                hideError('pais-error');
             }
             
             // Validar términos
             const terms = document.getElementById('terms').checked;
             if (!terms) {
-                showError('terms-error', 'Debes aceptar los términos');
+                showError('terms-error', 'Debes aceptar los términos y condiciones');
                 isValid = false;
-            } else {
-                hideError('terms-error');
             }
             
-            if (!isValid) {
-                e.preventDefault();
+            if (isValid) {
+                // Simular envío al servidor (en un caso real sería una petición AJAX)
+                setTimeout(() => {
+                    showSuccess('¡Cuenta creada con éxito! Redirigiendo...');
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Registro exitoso';
+                    
+                    // Redirigir después de 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'paneluser.html';
+                    }, 2000);
+                }, 1500);
+            } else {
+                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Crear Cuenta';
+                submitBtn.classList.remove('btn-loading');
+                showError('message', 'Por favor corrige los errores en el formulario');
             }
         });
         
         function showError(id, message) {
-            const errorElement = document.getElementById(id);
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
+            const element = document.getElementById(id);
+            element.textContent = message;
+            element.style.display = 'block';
+            element.className = 'message error';
         }
         
-        function hideError(id) {
-            const errorElement = document.getElementById(id);
-            errorElement.style.display = 'none';
+        function showSuccess(message) {
+            const element = document.getElementById('message');
+            element.textContent = message;
+            element.style.display = 'block';
+            element.className = 'message success';
         }
     </script>
 </body>
