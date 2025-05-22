@@ -12,7 +12,6 @@ app.secret_key = os.getenv('SECRET_KEY') or 'clave-secreta-predikta-123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Inicializar DB y OpenAI
 db = SQLAlchemy(app)
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
@@ -25,31 +24,37 @@ class User(db.Model):
     pais = db.Column(db.String(50))
     plan = db.Column(db.String(20), default='free')
 
-# Ruta de inicio
+# Página de inicio
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# Ruta de login
+# Login (admin o usuario)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('correo')
+        email = request.form.get('correo', '').strip().lower()
         password = request.form.get('contrasena')
         user = User.query.filter_by(email=email).first()
 
         if user and check_password_hash(user.password, password):
             session['user_id'] = user.id
-            return redirect(url_for('panel'))
+
+            # Verificamos si es admin
+            if email == 'admin@predikta.com':
+                return redirect(url_for('admin_panel'))
+            else:
+                return redirect(url_for('panel'))
+
         flash('Correo o contraseña incorrectos', 'error')
     return render_template('login.html')
 
-# Ruta de registro
+# Registro de usuario
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
     if request.method == 'POST':
         nombre = request.form.get('nombre_completo')
-        email = request.form.get('email')
+        email = request.form.get('email', '').strip().lower()
         password = generate_password_hash(request.form.get('password'))
         pais = request.form.get('pais')
 
@@ -59,36 +64,42 @@ def registro():
             db.session.commit()
             flash('Registro exitoso. Inicia sesión', 'success')
             return redirect(url_for('login'))
+
         flash('Este correo ya está registrado', 'error')
     return render_template('registro.html')
 
-# Ruta del panel de usuario
+# Panel de usuario
 @app.route('/panel')
 def panel():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    if user.email.strip().lower() == 'admin@predikta.com':
+        return redirect(url_for('admin_panel'))
+
     return render_template('paneluser.html')
 
-# Ruta del panel admin protegida
+# Panel de administrador
 @app.route('/admin')
 def admin_panel():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
     user = User.query.get(session['user_id'])
-    if user.email != 'admin@predikta.com':
+    if user.email.strip().lower() != 'admin@predikta.com':
         flash('Acceso denegado: No eres administrador.', 'error')
         return redirect(url_for('panel'))
 
     return render_template('admin.html')
 
-# Ruta del logout
+# Logout
 @app.route('/logout')
 def logout():
-    session.pop('user_id', None)
-    return redirect(url_for('home'))
+    session.clear()
+    return redirect(url_for('login'))
 
-# API de análisis con IA
+# API de análisis
 @app.route('/api/analizar', methods=['POST'])
 def analizar():
     if 'user_id' not in session:
@@ -159,7 +170,7 @@ Ahora genera la señal real con base en el gráfico e incluye el análisis técn
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Inicializar DB y ejecutar
+# Inicializador
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
