@@ -661,9 +661,16 @@
             </button>
         </form>
         
-        <div class="login-link">
-            ¿Ya tienes una cuenta? <a href="login.html">Inicia sesión aquí</a>
-        </div>
+       <div class="login-link">
+    ¿Ya tienes una cuenta? <a href="login.html" id="loginLink">Inicia sesión aquí</a>
+</div>
+
+<script>
+    // Redirección segura a login
+    document.getElementById('loginLink').addEventListener('click', function() {
+        window.location.href = 'login.html'; // Ruta absoluta
+    });
+</script>
     </div>
 
     <script>
