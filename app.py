@@ -68,6 +68,17 @@ def panel():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     return render_template('paneluser.html')
+@app.route('/admin')
+def admin_panel():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['user_id'])
+    if user.email != 'admin@predikta.com':
+        flash('Acceso denegado: No eres administrador.', 'error')
+        return redirect(url_for('panel'))
+
+    return render_template('admin.html')
 
 # Ruta del logout
 @app.route('/logout')
@@ -152,6 +163,20 @@ Ahora genera la señal real con base en el gráfico e incluye el análisis técn
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        if not User.query.filter_by(email='admin@predikta.com').first():
+            from werkzeug.security import generate_password_hash
+            admin = User(
+                nombre='Admin Predikta',
+                email='admin@predikta.com',
+                password=generate_password_hash('admin123'),
+                pais='Predikta'
+            )
+            db.session.add(admin)
+            db.session.commit()
+
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
+
     
 port = int(os.environ.get("PORT", 5000))
 app.run(host='0.0.0.0', port=port)
