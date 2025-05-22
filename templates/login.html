@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Predikta</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --azul-oscuro: #0a0f2c;
@@ -14,10 +15,19 @@
             --blanco: #ffffff;
             --negro: #000000;
             --error: #ff6b6b;
+            --success: #4caf50;
         }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--azul-oscuro);
+            background-image: radial-gradient(circle at 10% 20%, rgba(0, 188, 212, 0.1) 0%, rgba(10, 15, 44, 1) 90%);
             color: var(--blanco);
             display: flex;
             justify-content: center;
@@ -25,97 +35,320 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            line-height: 1.6;
         }
+        
         .form-container {
             background-color: var(--azul-medio);
-            padding: 30px;
-            border-radius: 10px;
+            padding: 40px;
+            border-radius: 15px;
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-in-out;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--cyan), transparent);
+        }
+        
         h2 {
             text-align: center;
             color: var(--cyan);
+            margin-bottom: 25px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .logo {
+            text-align: center;
             margin-bottom: 20px;
         }
+        
+        .logo img {
+            height: 50px;
+            transition: transform 0.3s ease;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
         label {
             display: block;
-            margin-top: 15px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
         }
+        
         input {
             width: 100%;
-            padding: 12px;
-            margin-top: 8px;
-            border-radius: 5px;
-            border: none;
+            padding: 14px 15px 14px 40px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             background-color: var(--azul-claro);
             color: var(--blanco);
             font-size: 16px;
+            transition: all 0.3s ease;
         }
+        
         input:focus {
-            outline: 2px solid var(--cyan);
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.2);
         }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 40px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 18px;
+        }
+        
         button {
             width: 100%;
-            padding: 12px;
-            margin-top: 20px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 8px;
             border: none;
             background-color: var(--cyan);
             color: var(--negro);
-            font-weight: bold;
+            font-weight: 600;
             font-size: 16px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
+        
         button:hover {
             background-color: var(--cyan-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.3);
         }
+        
         .links {
-            margin-top: 20px;
+            margin-top: 25px;
             text-align: center;
-            font-size: 14px;
+            font-size: 15px;
         }
+        
         .links a {
             color: var(--cyan);
             text-decoration: none;
-            display: block;
-            margin: 10px 0;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin: 0 5px;
+            padding: 5px;
         }
+        
         .links a:hover {
             text-decoration: underline;
+            transform: translateY(-1px);
         }
-        .flash-message {
-            color: #4caf50;
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: rgba(255, 255, 255, 0.5);
             font-size: 14px;
+        }
+        
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 0 10px;
+        }
+        
+        #message {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 5px;
             text-align: center;
-            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .error {
+            background-color: rgba(255, 107, 107, 0.2);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+        
+        .success {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .toggle-password:hover {
+            color: var(--cyan);
+        }
+        
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 3px solid transparent;
+            border-top-color: var(--negro);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 30px 20px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+            
+            .links a {
+                display: block;
+                margin: 10px 0;
+            }
         }
     </style>
 </head>
 <body>
     <div class="form-container">
+        <div class="logo">
+            <img src="https://via.placeholder.com/150x50?text=Predikta" alt="Predikta Logo" id="logo">
+        </div>
+        
         <h2>Iniciar Sesión</h2>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="flash-message">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+        <div id="message"></div>
 
-        <form action="{{ url_for('login') }}" method="POST">
-            <label for="correo">Correo Electrónico</label>
-            <input type="email" id="correo" name="correo" required>
-
-            <label for="contrasena">Contraseña</label>
-            <input type="password" id="contrasena" name="contrasena" required>
-
-            <button type="submit">Ingresar</button>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="correo">Correo Electrónico</label>
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="correo" name="correo" required placeholder="tucorreo@ejemplo.com" autocomplete="username">
+            </div>
+            
+            <div class="form-group">
+                <label for="contrasena">Contraseña</label>
+                <div class="password-container">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="contrasena" name="contrasena" required placeholder="••••••••" autocomplete="current-password">
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
+                </div>
+            </div>
+            
+            <button type="submit" id="submitBtn">
+                <i class="fas fa-sign-in-alt"></i> Ingresar
+            </button>
         </form>
 
+        <div class="divider">o</div>
+        
         <div class="links">
-            <a href="{{ url_for('registro') }}">¿No tienes cuenta? Regístrate aquí</a>
+            <a href="/registro"><i class="fas fa-user-plus"></i> Crear cuenta</a>
+            <a href="/recuperar"><i class="fas fa-key"></i> Recuperar contraseña</a>
+        </div>
+    </div>
+
+    <script>
+        // Mostrar/ocultar contraseña
+        function togglePassword() {
+            const passwordField = document.getElementById('contrasena');
+            const toggleIcon = document.querySelector('.toggle-password');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+        
+        // Manejo del formulario
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+            
+            // Mostrar estado de carga
+            submitBtn.innerHTML = '<i class="fas fa-spinner"></i> Verificando...';
+            submitBtn.classList.add('btn-loading');
+            
+            // Simular verificación (en producción esto sería una llamada AJAX)
+            setTimeout(() => {
+                const email = document.getElementById('correo').value;
+                const password = document.getElementById('contrasena').value;
+                
+                // Validación simple de ejemplo
+                if (email && password) {
+                    // Credenciales correctas (simulado)
+                    showMessage('Inicio de sesión exitoso. Redirigiendo...', 'success');
+                    
+                    // Redirigir al panel de usuario después de 1.5 segundos
+                    setTimeout(() => {
+                        window.location.href = '/paneluser';
+                    }, 1500);
+                } else {
+                    showMessage('Por favor complete todos los campos', 'error');
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Ingresar';
+                    submitBtn.classList.remove('btn-loading');
+                }
+            }, 1000);
+        });
+        
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = type;
+            messageDiv.style.display = 'block';
+            
+            // Ocultar mensaje después de 5 segundos
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
